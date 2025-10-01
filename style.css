@@ -1,0 +1,57 @@
+/* Custom styles for unique look */
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Roboto', sans-serif;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.task-item {
+  transition: all 0.3s ease;
+}
+
+.task-item.done {
+  opacity: 0.6;
+}
+
+.task-item.done .task-text {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+.add-btn:hover {
+  transform: scale(1.05);
+}
+
+.delete-btn {
+  transition: transform 0.2s;
+}
+
+.delete-btn:hover {
+  transform: scale(1.1);
+  background: #e74c3c;
+}
+
+.reminder-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.input-time {
+  width: 50px;
+}
+
+.task-edit-input {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
