@@ -18,37 +18,35 @@
       <div class="flex gap-2">
         <input type="text" id="task-input" placeholder="Enter a new task..."
           class="flex-1 p-3 rounded-lg border-none outline-none bg-white bg-opacity-80 text-gray-800" required>
-        <button type="submit" class="add-btn bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold transition">Add
+        <select id="priority-input" class="p-3 rounded-lg border-none outline-none bg-white bg-opacity-80 text-gray-800">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <input type="text" id="category-input" placeholder="Category..."
+          class="p-3 rounded-lg border-none outline-none bg-white bg-opacity-80 text-gray-800">
+        <input type="datetime-local" id="reminder-input" class="p-3 rounded-lg border-none outline-none bg-white bg-opacity-80 text-gray-800">
+        <button type="submit" class="add-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition">Add
           Task</button>
       </div>
     </form>
+    <div class="flex gap-2 mb-4">
+      <select id="sort-priority" class="p-3 rounded-lg border-none outline-none bg-white bg-opacity-80 text-gray-800">
+        <option value="default">Sort by Priority</option>
+        <option value="high">High to Low</option>
+        <option value="low">Low to High</option>
+      </select>
+      <select id="filter-category" class="p-3 rounded-lg border-none outline-none bg-white bg-opacity-80 text-gray-800">
+        <option value="all">All Categories</option>
+      </select>
+    </div>
     <ul id="task-list" class="space-y-2 mb-6">
       <!-- Tasks will be added here dynamically -->
     </ul>
     <div class="mb-4 flex justify-between items-center">
       <span id="task-count" class="text-white">Total tasks: 0</span>
       <span id="active-count" class="text-white">Active: 0</span>
-      <button id="clear-completed-btn" class="bg-red-500 text-white px-4 py-2 rounded font-semibold hidden">Clear Completed</button>
-    </div>
-
-    <!-- Daily Reminder Section -->
-    <div class="reminder-section">
-      <h3 class="text-2xl font-semibold text-white mb-4">Daily Reminder</h3>
-      <div class="flex items-center justify-center gap-4 mb-4">
-        <label for="reminder-hour" class="text-white">Hour:</label>
-        <input type="number" id="reminder-hour" class="input-time p-2 rounded bg-white bg-opacity-80 text-gray-800"
-          min="0" max="23" placeholder="HH">
-        <label for="reminder-minute" class="text-white">Minute:</label>
-        <input type="number" id="reminder-minute" class="input-time p-2 rounded bg-white bg-opacity-80 text-gray-800"
-          min="0" max="59" placeholder="MM">
-        <button id="set-reminder-btn" class="bg-green-500 text-white px-4 py-2 rounded font-semibold">Set
-          Reminder</button>
-      </div>
-      <div class="text-center">
-        <span id="reminder-status" class="text-white">Reminder: Off</span>
-        <button id="enable-notifications-btn"
-          class="ml-4 bg-purple-500 text-white px-4 py-2 rounded font-semibold hidden">Enable Notifications</button>
-      </div>
+      <button id="clear-completed-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold hidden">Clear Completed</button>
     </div>
   </div>
 
