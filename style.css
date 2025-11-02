@@ -1,7 +1,10 @@
-/* Custom styles for unique look */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Custom styles for modern dark theme */
 body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  font-family: 'Poppins', sans-serif;
+  color: #0567e7;
 }
 
 .container {
@@ -27,17 +30,23 @@ body {
   color: #aaa;
 }
 
+.add-btn {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+}
+
 .add-btn:hover {
   transform: scale(1.05);
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
 }
 
 .delete-btn {
   transition: transform 0.2s;
+  background: linear-gradient(135deg, #ef4444, #f87171);
 }
 
 .delete-btn:hover {
   transform: scale(1.1);
-  background: #e74c3c;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
 }
 
 .reminder-section {
@@ -54,4 +63,34 @@ body {
 .task-edit-input {
   background: rgba(255, 255, 255, 0.9);
   color: #333;
+}
+
+.task-item .priority {
+  min-width: 60px;
+  text-align: center;
+}
+
+.task-item .category {
+  background-color: #eee;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.get-steps-btn {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.get-steps-btn:hover {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+
+#sort-priority, #filter-category {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
 }
