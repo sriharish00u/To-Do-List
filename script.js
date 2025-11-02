@@ -1,6 +1,9 @@
 // To-Do List Functionality
 const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
+const priorityInput = document.getElementById('priority-input');
+const categoryInput = document.getElementById('category-input');
+const reminderInput = document.getElementById('reminder-input');
 const taskList = document.getElementById('task-list');
 const taskCount = document.getElementById('task-count');
 const activeCount = document.getElementById('active-count');
@@ -18,24 +21,81 @@ function createTaskItem(task, index) {
     <div class="flex items-center">
       <input type="checkbox" id="check-${index}" ${task.done ? 'checked' : ''} class="mr-3" aria-label="Mark task as done">
       <span class="task-text">${task.text}</span>
+      <span class="priority ml-2 text-xs font-semibold text-white px-2 py-1 rounded-full bg-${task.priority === 'high' ? 'red' : task.priority === 'medium' ? 'yellow' : 'green'}-500">${task.priority}</span>
+      <span class="category ml-2 text-xs font-semibold text-gray-500">${task.category}</span>
+      ${task.reminder ? `<span class="reminder ml-2 text-xs font-semibold text-blue-500">Reminder: ${new Date(task.reminder).toLocaleString()}</span>` : ''}
     </div>
-    <button class="delete-btn bg-red-500 text-white px-3 py-1 rounded ml-2" aria-label="Delete task">Delete</button>
+    <div>
+      <button class="get-steps-btn bg-blue-500 text-white px-3 py-1 rounded ml-2" aria-label="Get task steps">Get Steps</button>
+      <button class="delete-btn bg-red-500 text-white px-3 py-1 rounded ml-2" aria-label="Delete task">Delete</button>
+    </div>
   `;
   return li;
 }
 
+const sortPriority = document.getElementById('sort-priority');
+const filterCategory = document.getElementById('filter-category');
+
 // Render tasks
 function renderTasks() {
+  let filteredTasks = [...tasks];
+
+  // Filter by category
+  const category = filterCategory.value;
+  if (category !== 'all') {
+    filteredTasks = filteredTasks.filter(task => task.category === category);
+  }
+
+  // Sort by priority
+  const sortBy = sortPriority.value;
+  if (sortBy === 'high') {
+    filteredTasks.sort((a, b) => {
+      const priorityA = a.priority === 'high' ? 3 : a.priority === 'medium' ? 2 : 1;
+      const priorityB = b.priority === 'high' ? 3 : b.priority === 'medium' ? 2 : 1;
+      return priorityB - priorityA;
+    });
+  } else if (sortBy === 'low') {
+    filteredTasks.sort((a, b) => {
+      const priorityA = a.priority === 'high' ? 3 : a.priority === 'medium' ? 2 : 1;
+      const priorityB = b.priority === 'high' ? 3 : b.priority === 'medium' ? 2 : 1;
+      return priorityA - priorityB;
+    });
+  }
+
   taskList.innerHTML = '';
-  if (tasks.length === 0) {
+  if (filteredTasks.length === 0) {
     taskList.innerHTML = `<li class="text-center text-gray-400">No tasks yet!</li>`;
   } else {
-    tasks.forEach((task, index) => {
-      taskList.appendChild(createTaskItem(task, index));
+    filteredTasks.forEach((task, index) => {
+      const originalIndex = tasks.findIndex(t => t.text === task.text);
+      taskList.appendChild(createTaskItem(task, originalIndex));
     });
   }
   updateCounts();
+  populateCategories();
 }
+
+function populateCategories() {
+  const currentValue = filterCategory.value;
+  const categories = ['all', ...new Set(tasks.map(task => task.category))];
+  filterCategory.innerHTML = '';
+  categories.forEach(category => {
+    if(category) {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+      filterCategory.appendChild(option);
+    }
+  });
+  // Preserve the current selection or default to 'all'
+  filterCategory.value = currentValue || 'all';
+}
+
+sortPriority.addEventListener('change', renderTasks);
+filterCategory.addEventListener('change', renderTasks);
+
+// Initial render
+renderTasks();
 
 // Event delegation for task actions
 taskList.addEventListener('click', (e) => {
@@ -53,7 +113,25 @@ taskList.addEventListener('click', (e) => {
     saveTasks();
     renderTasks();
   }
+  if (e.target.matches('.get-steps-btn')) {
+    getTaskSteps(tasks[index].text);
+  }
 });
+
+// Mock function for Get Steps since API keys are invalid
+async function getTaskSteps(taskText) {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  // Return mock steps
+  const mockSteps = [
+    `1. Research and plan how to ${taskText}.`,
+    `2. Gather necessary resources for ${taskText}.`,
+    `3. Execute the first step of ${taskText}.`,
+    `4. Monitor progress and make adjustments.`,
+    `5. Complete ${taskText} and review the outcome.`
+  ];
+  alert(`Mock Steps for "${taskText}":\n\n${mockSteps.join('\n')}`);
+}
 
 // Double-click to edit task
 taskList.addEventListener('dblclick', (e) => {
@@ -69,28 +147,46 @@ function startEditing(index) {
   if (editingIndex !== -1) return; // Prevent multiple edits
   editingIndex = index;
   const li = taskList.children[index];
-  const span = li.querySelector('.task-text');
-  const originalText = span.textContent;
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.value = originalText;
-  input.className = 'task-edit-input flex-1 p-1 rounded border';
-  span.replaceWith(input);
-  input.focus();
-  input.select();
+  const task = tasks[index];
+
+  const originalText = task.text;
+  const originalPriority = task.priority;
+  const originalCategory = task.category;
+  const originalReminder = task.reminder;
+
+  li.innerHTML = `
+    <div class="flex items-center">
+      <input type="text" value="${originalText}" class="task-edit-input flex-1 p-1 rounded border">
+      <select class="priority-edit-input p-1 rounded border ml-2">
+        <option value="low" ${originalPriority === 'low' ? 'selected' : ''}>Low</option>
+        <option value="medium" ${originalPriority === 'medium' ? 'selected' : ''}>Medium</option>
+        <option value="high" ${originalPriority === 'high' ? 'selected' : ''}>High</option>
+      </select>
+      <input type="text" value="${originalCategory}" class="category-edit-input p-1 rounded border ml-2">
+      <input type="datetime-local" value="${originalReminder ? new Date(originalReminder).toISOString().slice(0, 16) : ''}" class="reminder-edit-input p-1 rounded border ml-2">
+    </div>
+    <button class="save-edit-btn bg-green-500 text-white px-3 py-1 rounded ml-2">Save</button>
+  `;
 
   const saveEdit = () => {
-    const newText = input.value.trim();
-    if (newText && newText !== originalText && !tasks.some((t, i) => i !== index && t.text === newText)) {
+    const newText = li.querySelector('.task-edit-input').value.trim();
+    const newPriority = li.querySelector('.priority-edit-input').value;
+    const newCategory = li.querySelector('.category-edit-input').value.trim();
+    const newReminder = li.querySelector('.reminder-edit-input').value;
+
+    if (newText && !tasks.some((t, i) => i !== index && t.text === newText)) {
       tasks[index].text = newText;
+      tasks[index].priority = newPriority;
+      tasks[index].category = newCategory;
+      tasks[index].reminder = newReminder;
       saveTasks();
     }
     editingIndex = -1;
     renderTasks();
   };
 
-  input.addEventListener('blur', saveEdit);
-  input.addEventListener('keydown', (e) => {
+  li.querySelector('.save-edit-btn').addEventListener('click', saveEdit);
+  li.querySelector('.task-edit-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') saveEdit();
     if (e.key === 'Escape') {
       editingIndex = -1;
@@ -125,9 +221,14 @@ clearCompletedBtn.addEventListener('click', () => {
 taskForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const text = taskInput.value.trim();
+  const priority = priorityInput.value;
+  const category = categoryInput.value.trim();
+  const reminder = reminderInput.value;
   if (text && !tasks.some(task => task.text === text)) {
-    tasks.push({ text, done: false });
+    tasks.push({ text, priority, category, reminder, done: false });
     taskInput.value = '';
+    categoryInput.value = '';
+    reminderInput.value = '';
     saveTasks();
     renderTasks();
   } else if (!text) {
@@ -250,26 +351,27 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ...existing code...
-
-function scheduleReminder() {
-  clearInterval(reminderIntervalId);
-  if (!reminderTime) return;
-
-  reminderIntervalId = setInterval(() => {
-    const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
-    const today = now.toDateString();
-
-    if (
-      hour === reminderTime.hour &&
-      minute === reminderTime.minute &&
-      lastReminderDate !== today
-    ) {
-      sendReminder();
+// Task-specific reminders
+async function checkTaskReminders() {
+  const now = new Date();
+  console.log('Checking task reminders at:', now.toLocaleString());
+  for (const task of tasks) {
+    if (task.reminder && !task.done) {
+      const reminderTime = new Date(task.reminder);
+      console.log(`Task: ${task.text}, Reminder: ${reminderTime.toLocaleString()}, Now: ${now.toLocaleString()}`);
+      if (now >= reminderTime && now - reminderTime < 60000) { // Within the last minute
+        console.log('Reminder condition met for task:', task.text);
+        alert(`Reminder for task: ${task.text}`);
+        // Mark reminder as triggered to avoid repeated notifications
+        task.reminder = null;
+        saveTasks();
+        renderTasks();
+      }
     }
-  }, 1000);
+  }
 }
+
+// Check task reminders every second for more precise timing
+setInterval(checkTaskReminders, 1000);
 
 // ...existing code...
